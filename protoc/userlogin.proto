@@ -1,0 +1,66 @@
+syntax = "proto3";
+package auth;
+option go_package = "./;auth";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+
+// The request message containing the username and password.
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginPhoneRequest {
+  string phone = 1;
+  string code = 2;
+}
+
+// The response message containing the JWT token.
+message LoginResponse {
+  string token = 1;
+}
+
+// The user message containing the user.
+message User {
+  int32  id = 1;
+  string email = 2;
+  string username = 3;
+  string passwordHash = 4;
+  bool   isAdmin = 5;
+}
+
+message UserIdRequest{
+  int32  id = 1;
+}
+
+message HealthResponse {
+  string Status = 1;
+}
+
+service Auth {
+  rpc Login (LoginRequest) returns (LoginResponse){
+    option (google.api.http) = {
+      post: "/v8/auth/login"
+      body: "*"
+    };
+  };
+  rpc PhoneLogin (LoginPhoneRequest) returns (LoginResponse){
+    option (google.api.http) = {
+      post: "/v8/auth/login/phone"
+      body: "*"
+    };
+  };
+  rpc GetUserInfo(UserIdRequest) returns(User) {
+    option (google.api.http) = {
+      post: "/v8/auth/getUserInfo"
+      body: "*"
+    };
+  };
+  rpc AuthHealthCheck(google.protobuf.Empty) returns (HealthResponse) {
+    option (google.api.http) = {
+      get: "/v8/auth/health"
+    };
+  }
+}
+
